@@ -9,6 +9,7 @@
     <div id="compresion" style="display: none;">
         <h2>vCard</h2>
         <textarea id="texto" rows="10" cols="60">BEGIN:VCARD
+VERSION:3.0
 FN:John Appleseed
 ORG:APPLE
 TEL:+18885551212
@@ -38,12 +39,13 @@ END:VCARD</textarea>
 
         function decodificarVCard(datos) {
             const etiquetas = {
-                0x01: "BEGIN:VCARD\r\n",
-                0x02: "END:VCARD\r\n",
-                0x03: "FN:",
-                0x04: "ORG:",
-                0x05: "TEL:",
-                0x06: "EMAIL:"
+                0x01: "BEGIN:VCARD",
+                0x02: "END:VCARD",
+                0x03: "VERSION:3.0",
+                0x04: "FN:",
+                0x05: "ORG:",
+                0x06: "TEL:",
+                0x07: "EMAIL:"                
             };
             let resultado = "";
             let i = 0;
@@ -51,10 +53,9 @@ END:VCARD</textarea>
                 const codigo = datos[i++];
                 const etiqueta = etiquetas[codigo];
                 if (codigo === 0x01 || codigo === 0x02) {
-                    resultado += etiqueta;
+                    resultado += etiqueta + "\r\n";
                 } else {
                     let valor = "";
-                    // Seguir añadiendo caracteres hasta encontrar un nuevo código de campo o llegar al final de los datos
                     while (i < datos.length && !(datos[i] in etiquetas)) {
                         valor += String.fromCharCode(datos[i++]);
                     }
@@ -77,34 +78,33 @@ END:VCARD</textarea>
         function comprimirTexto() {
             const texto = document.getElementById('texto').value;
             const campos = texto.split(/\r?\n/);
-            let buffer = new Uint8Array(campos.length * 30);  // Considera ajustar este tamaño según tus necesidades específicas.
+            let buffer = new Uint8Array(campos.length * 30);
             let offset = 0;
         
             campos.forEach(campo => {
-                if (campo.trim() === '') return;  // Ignorar líneas vacías
+                if (campo.trim() === '') return;
                 let [etiqueta, valor] = campo.split(':');
-                valor = valor.trim(); // Asegúrate de quitar espacios iniciales y finales que podrían aumentar innecesariamente el tamaño.
+                valor = valor.trim();
         
                 switch (etiqueta) {
                     case 'BEGIN':
                     case 'END':
                         buffer[offset++] = etiqueta === 'BEGIN' ? 0x01 : 0x02;
                         break;
+                    case 'VERSION':
                     case 'FN':
                     case 'ORG':
                     case 'TEL':
                     case 'EMAIL':
-                        const tagCode = { 'FN': 0x03, 'ORG': 0x04, 'TEL': 0x05, 'EMAIL': 0x06 }[etiqueta];
+                        const tagCode = { 'VERSION': 0x03, 'FN': 0x04, 'ORG': 0x05, 'TEL': 0x06, 'EMAIL': 0x07 }[etiqueta];
                         buffer[offset++] = tagCode;
                         for (let i = 0; i < valor.length; i++) {
                             buffer[offset++] = valor.charCodeAt(i);
                         }
-                        // No añadir 0x00 como delimitador de fin de valor
                         break;
                 }
             });
-        
-            // Solo copiamos hasta 'offset' para asegurarnos de que no incluimos bytes no usados.
+
             const datosComprimidos = pako.deflate(buffer.subarray(0, offset), { level: 9 });
             const base64Comprimido = btoa(String.fromCharCode.apply(null, datosComprimidos));
             document.getElementById('resultado').value = base64Comprimido;
