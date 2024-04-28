@@ -73,7 +73,7 @@ END:VCARD</textarea>
 		return resultado;
 	}
 
-	function descargarComoArchivo2(contenido, nombreArchivo) {
+	function descargarComoArchivo(contenido, nombreArchivo) {
 		const elemento = document.createElement('a');
 		const archivo = new Blob([contenido], {
 			type: 'text/vcard;charset=utf-8'
