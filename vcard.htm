@@ -47,12 +47,13 @@ END:VCARD</textarea>
 		const charData = datosComprimidos.split('').map(c => c.charCodeAt(0));
 		const binData = new Uint8Array(charData);
 		const datosDescomprimidos = pako.inflate(binData);
-		const textoOriginal = decodificarVCard(datosDescomprimidos);
-		descargarComoArchivo(textoOriginal, "vCard.vcf");
+		const vCardData = decodificarVCard(datosDescomprimidos);
+		descargarComoArchivo(vCardData.contenido, vCardData.filename);
 	}
 
 	function decodificarVCard(datos) {
 		let resultado = "";
+		let filename = "vCard.vcf";
 		let i = 0;
 		resultado += "BEGIN:VCARD" + "\r\n";
 		resultado += "VERSION:3.0" + "\r\n";
@@ -65,15 +66,18 @@ END:VCARD</textarea>
 			}
 			if(valor !== undefined) {
 				resultado += etiqueta + valor + "\r\n";
+				if (etiqueta === "FN:") {
+					filename = valor.toLowerCase().replace(/\s/g, '') + ".vcf";
+				}
 			} else {
 				resultado += etiqueta + "\r\n";
 			}
 		}
 		resultado += "END:VCARD" + "\r\n";
-		return resultado;
+		return { contenido: resultado, filename: filename };
 	}
 
-	function descargarComoArchivo(contenido, nombreArchivo) {
+	function descargarComoArchivo(contenido, filename) {
 		const elemento = document.createElement('a');
 		const archivo = new Blob([contenido], {
 			type: 'text/vcard;charset=utf-8'
