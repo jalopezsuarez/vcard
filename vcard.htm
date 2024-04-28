@@ -85,7 +85,7 @@ END:VCARD</textarea>
 		const url = URL.createObjectURL(archivo);
 		
 		elemento.href = url
-		elemento.download = nombreArchivo;
+		elemento.download = filename;
 		document.body.appendChild(elemento);
 		elemento.click();
 		document.body.removeChild(elemento);
