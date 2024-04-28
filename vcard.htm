@@ -71,7 +71,7 @@ END:VCARD</textarea>
 		return resultado;
 	}
 
-	function descargarComoArchivo(contenido, nombreArchivo) {
+	function descargarComoArchivo2(contenido, nombreArchivo) {
 		const elemento = document.createElement('a');
 		const archivo = new Blob([contenido], {
 			type: 'text/vcard;charset=utf-8'
@@ -81,6 +81,14 @@ END:VCARD</textarea>
 		document.body.appendChild(elemento);
 		elemento.click();
 		document.body.removeChild(elemento);
+	}
+
+	function descargarComoArchivo(contenido, nombreArchivo) {
+    		const archivo = new Blob([contenido], {
+        		type: 'text/vcard;charset=utf-8'
+    		});
+    		const url = URL.createObjectURL(archivo);
+    		window.open(url, '_blank');
 	}
 
 	function comprimirTexto() {
