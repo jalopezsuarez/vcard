@@ -78,22 +78,18 @@ END:VCARD</textarea>
 		const archivo = new Blob([contenido], {
 			type: 'text/vcard;charset=utf-8'
 		});
-		elemento.href = URL.createObjectURL(archivo);
+		const url = URL.createObjectURL(archivo);
+		
+		elemento.href = url
 		elemento.download = nombreArchivo;
 		document.body.appendChild(elemento);
 		elemento.click();
 		document.body.removeChild(elemento);
-	}
 
-	function descargarComoArchivo(contenido, nombreArchivo) {
-    		const archivo = new Blob([contenido], {
-        		type: 'text/vcard;charset=utf-8'
-    		});
-    		const url = URL.createObjectURL(archivo);
-    		//window.open(url, '_blank');
-		window.location.href = `intent://scan/#Intent;scheme=content;type=text/vcard;S.browser_fallback_url=${encodeURIComponent(url)};end`;
+		//window.open(url, '_blank');
+		//window.location.href = `intent://scan/#Intent;scheme=content;type=text/vcard;S.browser_fallback_url=${encodeURIComponent(url)};end`;
 	}
-
+		
 	function comprimirTexto() {
 		const texto = document.getElementById('texto').value;
 		const campos = texto.split(/\r?\n/);
