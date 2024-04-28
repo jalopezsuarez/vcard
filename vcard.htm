@@ -16,8 +16,8 @@ N:Applesed;John;;;
 FN:John Appleseed
 ORG:APPLE
 TITLE:Manager
-TEL:+18885551212
-EMAIL:john.appleseed@apple.com
+TEL;TYPE=WORK,PREF:+18885551212
+EMAIL;TYPE=WORK,PREF:john.appleseed@apple.com
 END:VCARD</textarea>
 		<textarea id="resultado" rows="10" cols="60" readonly></textarea>
 		<button onclick="comprimirTexto()">vCard (Compress / Base64)</button>
@@ -36,8 +36,10 @@ END:VCARD</textarea>
 		0x02: "FN:",
 		0x03: "ORG:",
 		0x04: "TITLE:",
-		0x05: "TEL:",
-		0x06: "EMAIL:"
+		0x05: "TEL:",		
+		0x06: "TEL;TYPE=WORK,PREF:",
+		0x07: "EMAIL:",
+		0x08: "EMAIL;TYPE=WORK,PREF:"
 	};
 
 	function descomprimirYDecodificar(textoComprimido) {
