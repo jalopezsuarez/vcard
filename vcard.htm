@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>vCard</title>
+    <script src="https://cdn.jsdelivr.net/npm/pako@1.0.11/dist/pako.min.js"></script>
+</head>
+<body>
+    <div id="compresion" style="display: none;">
+        <h2>vCard</h2>
+        <textarea id="texto" rows="10" cols="60">BEGIN:VCARD
+FN:John Appleseed
+ORG:APPLE
+TEL:+18885551212
+EMAIL:john.appleseed@apple.com
+END:VCARD</textarea>        
+        <textarea id="resultado" rows="10" cols="60" readonly></textarea>
+        <button onclick="comprimirTexto()">vCard (Compress / Base64)</button>
+    </div>
+    <script>
+        window.onload = function() {
+            const hash = window.location.hash.substr(1);
+            if (hash) {               
+                descomprimirYDecodificar(hash);
+            } else {
+                document.getElementById('compresion').style.display = 'block';
+            }
+        }
+
+        function descomprimirYDecodificar(textoComprimido) {
+            const datosComprimidos = atob(textoComprimido);
+            const charData = datosComprimidos.split('').map(c => c.charCodeAt(0));
+            const binData = new Uint8Array(charData);
+            const datosDescomprimidos = pako.inflate(binData);
+            const textoOriginal = decodificarVCard(datosDescomprimidos);
+            descargarComoArchivo(textoOriginal, "vCard.vcf");
+        }
+
+        function decodificarVCard(datos) {
+            const etiquetas = {
+                0x01: "BEGIN:VCARD\r\n",
+                0x02: "END:VCARD\r\n",
+                0x03: "FN:",
+                0x04: "ORG:",
+                0x05: "TEL:",
+                0x06: "EMAIL:"
+            };
+            let resultado = "";
+            let i = 0;
+            while (i < datos.length) {
+                const codigo = datos[i++];
+                const etiqueta = etiquetas[codigo];
+                if (codigo === 0x01 || codigo === 0x02) {
+                    resultado += etiqueta;
+                } else {
+                    let valor = "";
+                    // Seguir añadiendo caracteres hasta encontrar un nuevo código de campo o llegar al final de los datos
+                    while (i < datos.length && !(datos[i] in etiquetas)) {
+                        valor += String.fromCharCode(datos[i++]);
+                    }
+                    resultado += etiqueta + valor + "\r\n";
+                }
+            }
+            return resultado;
+        }
+
+        function descargarComoArchivo(contenido, nombreArchivo) {
+            const elemento = document.createElement('a');
+            const archivo = new Blob([contenido], {type: 'text/vcard;charset=utf-8'});
+            elemento.href = URL.createObjectURL(archivo);
+            elemento.download = nombreArchivo;
+            document.body.appendChild(elemento);
+            elemento.click();
+            document.body.removeChild(elemento);
+        }
+
+        function comprimirTexto() {
+            const texto = document.getElementById('texto').value;
+            const campos = texto.split(/\r?\n/);
+            let buffer = new Uint8Array(campos.length * 30);  // Considera ajustar este tamaño según tus necesidades específicas.
+            let offset = 0;
+        
+            campos.forEach(campo => {
+                if (campo.trim() === '') return;  // Ignorar líneas vacías
+                let [etiqueta, valor] = campo.split(':');
+                valor = valor.trim(); // Asegúrate de quitar espacios iniciales y finales que podrían aumentar innecesariamente el tamaño.
+        
+                switch (etiqueta) {
+                    case 'BEGIN':
+                    case 'END':
+                        buffer[offset++] = etiqueta === 'BEGIN' ? 0x01 : 0x02;
+                        break;
+                    case 'FN':
+                    case 'ORG':
+                    case 'TEL':
+                    case 'EMAIL':
+                        const tagCode = { 'FN': 0x03, 'ORG': 0x04, 'TEL': 0x05, 'EMAIL': 0x06 }[etiqueta];
+                        buffer[offset++] = tagCode;
+                        for (let i = 0; i < valor.length; i++) {
+                            buffer[offset++] = valor.charCodeAt(i);
+                        }
+                        // No añadir 0x00 como delimitador de fin de valor
+                        break;
+                }
+            });
+        
+            // Solo copiamos hasta 'offset' para asegurarnos de que no incluimos bytes no usados.
+            const datosComprimidos = pako.deflate(buffer.subarray(0, offset), { level: 9 });
+            const base64Comprimido = btoa(String.fromCharCode.apply(null, datosComprimidos));
+            document.getElementById('resultado').value = base64Comprimido;
+        }
+     
+    </script>
+</body>
+</html>
