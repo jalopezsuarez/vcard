@@ -71,30 +71,26 @@ END:VCARD</textarea>
 		return resultado;
 	}
 
-function descargarComoArchivo(contenido, nombreArchivo) {
-    const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+	function descargarComoArchivo2(contenido, nombreArchivo) {
+		const elemento = document.createElement('a');
+		const archivo = new Blob([contenido], {
+			type: 'text/vcard;charset=utf-8'
+		});
+		elemento.href = URL.createObjectURL(archivo);
+		elemento.download = nombreArchivo;
+		document.body.appendChild(elemento);
+		elemento.click();
+		document.body.removeChild(elemento);
+	}
 
-    // Crear un Blob con el contenido
-    const archivo = new Blob([contenido], {
-        type: 'text/vcard;charset=utf-8'
-    });
-    const urlArchivo = URL.createObjectURL(archivo);
-
-    // Verificar si el dispositivo es Android
-    if (/android/i.test(userAgent)) {
-        // Usar un Intent para abrir el archivo en una app compatible
-        window.location.href = `intent://scan/#Intent;scheme=content;type=text/vcard;S.browser_fallback_url=${encodeURIComponent(urlArchivo)};end`;
-    } else {
-        // Para iOS y otros sistemas, usar el método tradicional de descarga
-        const elemento = document.createElement('a');
-        elemento.href = urlArchivo;
-        elemento.download = nombreArchivo;
-        document.body.appendChild(elemento);
-        elemento.click();
-        document.body.removeChild(elemento);
-    }
-}
-
+	function descargarComoArchivo(contenido, nombreArchivo) {
+    		const archivo = new Blob([contenido], {
+        		type: 'text/vcard;charset=utf-8'
+    		});
+    		const url = URL.createObjectURL(archivo);
+    		//window.open(url, '_blank');
+		window.location.href = `intent://scan/#Intent;scheme=content;type=text/vcard;S.browser_fallback_url=${encodeURIComponent(url)};end`;
+	}
 
 	function comprimirTexto() {
 		const texto = document.getElementById('texto').value;
