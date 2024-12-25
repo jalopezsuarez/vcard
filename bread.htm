@@ -29,7 +29,7 @@
       width: 90%;
       max-width: 500px;
       text-align: center;
-      margin-bottom: 20px;
+      margin: 20px auto; /* Márgenes iguales arriba, abajo, izquierda y derecha */
     }
     .info-container {
       text-align: left;
@@ -150,9 +150,9 @@
     <table id="tablaConsultas">
       <thead>
         <tr>
-          <th>Fecha-Hora del Cálculo</th>
-          <th>Temperatura (°C)</th>
-          <th>Hora Final</th>
+          <th>Cálculo</th>
+          <th>Temp (°C)</th>
+          <th>Termina</th>
         </tr>
       </thead>
       <tbody>
@@ -184,8 +184,10 @@
 
     function guardarConsulta(temperatura, horaFinal) {
       const consultas = JSON.parse(localStorage.getItem('SourdoughBreadHelper')) || [];
+      const now = new Date();
+      const fechaHora = `${now.toLocaleDateString()} ${now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
       const nuevaConsulta = {
-        fechaHora: new Date().toLocaleString(),
+        fechaHora,
         temperatura,
         horaFinal
       };
