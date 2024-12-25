@@ -81,6 +81,8 @@
     <h2>Calculadora de Fermentación</h2>
     <p>Ingresa la temperatura media ambiente (°C):</p>
     <input type="number" id="temperatura" placeholder="Temperatura en °C" />
+    <p>Opcional: Ingresa la hora de inicio (formato 24):</p>
+    <input type="number" id="horaInicio" placeholder="Hora de inicio (0-23)" />
     <button onclick="calcularTiempo()">Calcular Tiempo</button>
     <div class="result" id="resultado"></div>
   </div>
@@ -134,17 +136,24 @@
 
     function calcularTiempo() {
       const temperatura = parseFloat(document.getElementById('temperatura').value);
+      const horaInicio = parseInt(document.getElementById('horaInicio').value);
+      const resultadoDiv = document.getElementById('resultado');
+
       if (isNaN(temperatura) || temperatura <= 0) {
-        document.getElementById('resultado').innerText = "Por favor, ingresa una temperatura válida.";
+        resultadoDiv.innerText = "Por favor, ingresa una temperatura válida.";
         return;
       }
 
       // Aplicar fórmula con 1 decimal
       const tiempo = (a * Math.pow(temperatura, -b)).toFixed(1);
+      let mensaje = `El tiempo estimado de fermentación es de aproximadamente <strong>${tiempo} horas</strong>.`;
 
-      // Mostrar resultado con la palabra "horas" en negrita
-      document.getElementById('resultado').innerHTML = 
-        `El tiempo estimado de fermentación es de aproximadamente <strong>${tiempo} horas</strong>.`;
+      if (!isNaN(horaInicio) && horaInicio >= 0 && horaInicio <= 23) {
+        const tiempoFinal = (horaInicio + parseFloat(tiempo)) % 24;
+        mensaje += `<br>Si empiezas a las <strong>${horaInicio}:00</strong>, la fermentación termnará alrededor de las <strong>${Math.floor(tiempoFinal)}:00</strong>.`;
+      }
+
+      resultadoDiv.innerHTML = mensaje;
     }
   </script>
 </body>
