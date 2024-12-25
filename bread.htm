@@ -102,6 +102,24 @@
     <button onclick="calcularTiempo()">Calcular Tiempo</button>
     <div class="result" id="resultado"></div>
   </div>
+  
+  <div class="info-container">
+    <h3>ÚLTIMAS CONSULTAS</h3>
+    <table id="tablaConsultas">
+      <thead>
+        <tr>
+          <th>Temp</th>
+          <th>Horas</th>
+          <th>Inicio</th>
+          <th>Termina</th>
+          <th>Registro</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Las filas se llenarán dinámicamente -->
+      </tbody>
+    </table>
+  </div>
 
   <div class="info-container">
     <div class="info">
@@ -143,25 +161,7 @@
         - Guardar en la nevera para conservar.
       </p>
     </div>
-  </div>  
-  
-  <div class="info-container">
-    <h3>ÚLTIMAS CONSULTAS</h3>
-    <table id="tablaConsultas">
-      <thead>
-        <tr>
-          <th>Temp</th>
-          <th>Horas</th>
-          <th>Inicio</th>
-          <th>Termina</th>
-          <th>Registro</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- Las filas se llenarán dinámicamente -->
-      </tbody>
-    </table>
-  </div>
+  </div>    
 
   <script>
     const a = 172936;
