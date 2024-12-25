@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SourdoughBreadHelper</title>
+  <title>Sourdough Bread Helper</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -29,7 +29,7 @@
       width: 90%;
       max-width: 500px;
       text-align: center;
-      margin: 20px auto; /* Márgenes iguales arriba, abajo, izquierda y derecha */
+      margin: 10px 10px; /* Márgenes iguales arriba, abajo, izquierda y derecha */
     }
     .info-container {
       text-align: left;
@@ -95,9 +95,9 @@
   <h1>SourdoughBreadHelper</h1>
   <div class="container">
     <h2>Calculadora de Fermentación</h2>
-    <p>Ingresa la temperatura media ambiente (°C):</p>
+    <p>Temperatura media ambiente (°C):</p>
     <input type="number" id="temperatura" placeholder="Temperatura en °C" />
-    <p>Opcional: Ingresa la hora de inicio (formato 24):</p>
+    <p>Opcional: Hora estimada de inicio (formato 24):</p>
     <input type="number" id="horaInicio" placeholder="Hora de inicio (0-23)" />
     <button onclick="calcularTiempo()">Calcular Tiempo</button>
     <div class="result" id="resultado"></div>
@@ -109,8 +109,8 @@
       <p>
         Paso 1) 400g agua<br>
         Paso 2) 100g masa madre<br>
-        Paso 3) 10g sal - 1 cuchara pequeña<br>
-        Paso 4) semillas - 2 / 3 cucharas grandes<br>
+        Paso 3) 10g sal - 1 cucharadita<br>
+        Paso 4) Semillas - 3 cucharadas<br>
         Paso 5) 500g mezcla harinas
       </p>
 
@@ -138,15 +138,15 @@
       <h3>MASA MADRE: CREACIÓN</h3>
       <p>
         - Mantenerla entre 25 +/- 2 °C temperatura estable.<br>
-        - REFRESCAR 5 DÍAS: papilla de harina y agua.<br>
-        - REFRESCAR: DUPLICA TAMAÑO (flota en agua).<br>
+        - REFRESCAR 5 DÍAS: Papilla de harina y agua.<br>
+        - PREPARADA: Duplica tamaño (flota en agua).<br>
         - Guardar en la nevera para conservar.
       </p>
     </div>
   </div>
 
   <div class="info-container">
-    <h3>Últimas Consultas</h3>
+    <h3>ÚLTIMAS CONSULTAS</h3>
     <table id="tablaConsultas">
       <thead>
         <tr>
