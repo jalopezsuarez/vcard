@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Calculadora de Fermentación</title>
+  <title>SourdoughBreadHelper</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -11,22 +11,28 @@
       padding: 0;
       display: flex;
       flex-direction: column;
+      justify-content: center;
       align-items: center;
+      min-height: 100vh;
       background-color: #f4f4f9;
-      padding-bottom: 20px;
     }
-    .container {
+    h1 {
+      font-size: 24px;
+      color: #007bff;
+      margin-bottom: 20px;
+    }
+    .container, .info-container {
       background: #fff;
       padding: 20px;
       border-radius: 10px;
       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-      text-align: center;
-      margin-top: 20px;
       width: 90%;
       max-width: 500px;
+      text-align: center;
+      margin-bottom: 20px;
     }
-    h1 {
-      color: #333;
+    .info-container {
+      text-align: left;
     }
     input {
       padding: 10px;
@@ -52,16 +58,6 @@
       font-size: 18px;
       color: #333;
     }
-    .info-container {
-      background: #fff;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-      margin-top: 20px;
-      width: 90%;
-      max-width: 500px;
-      text-align: left;
-    }
     .info h3 {
       color: #007bff;
       margin-top: 20px;
@@ -74,8 +70,9 @@
   </style>
 </head>
 <body>
+  <h1>SourdoughBreadHelper</h1>
   <div class="container">
-    <h1>Calculadora de Fermentación</h1>
+    <h2>Calculadora de Fermentación</h2>
     <p>Ingresa la temperatura media ambiente (°C):</p>
     <input type="number" id="temperatura" placeholder="Temperatura en °C" />
     <button onclick="calcularTiempo()">Calcular Tiempo</button>
@@ -136,12 +133,12 @@
         return;
       }
 
-      // Aplicar fórmula
-      const tiempo = a * Math.pow(temperatura, -b);
+      // Aplicar fórmula y redondear al entero superior
+      const tiempo = Math.ceil(a * Math.pow(temperatura, -b));
 
       // Mostrar resultado
       document.getElementById('resultado').innerText = 
-        `El tiempo estimado de fermentación es de aproximadamente ${tiempo.toFixed(2)} horas.`;
+        `El tiempo estimado de fermentación es de aproximadamente ${tiempo} horas.`;
     }
   </script>
 </body>
