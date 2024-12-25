@@ -14,15 +14,15 @@
       justify-content: center;
       align-items: center;
       min-height: 100vh;
-      background-color: #f4f4f9;
+      background-color: #fdf6e3; /* Tono amarillento pálido */
     }
     h1 {
-      font-size: 24px;
-      color: #007bff;
+      font-size: 26px;
+      color: #b58900; /* Tono amarillo trigo */
       margin-bottom: 20px;
     }
     .container, .info-container {
-      background: #fff;
+      background: #fffde7; /* Fondo claro amarillo */
       padding: 20px;
       border-radius: 10px;
       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -37,21 +37,21 @@
     input {
       padding: 10px;
       font-size: 16px;
-      border: 1px solid #ccc;
+      border: 1px solid #e3c882; /* Tono dorado */
       border-radius: 5px;
       width: 100%;
       margin-bottom: 10px;
     }
     button {
       padding: 10px 20px;
-      background-color: #007bff;
+      background-color: #b58900; /* Amarillo trigo */
       color: #fff;
       border: none;
       border-radius: 5px;
       cursor: pointer;
     }
     button:hover {
-      background-color: #0056b3;
+      background-color: #997000; /* Tono más oscuro */
     }
     .result {
       margin-top: 20px;
@@ -59,10 +59,10 @@
       color: #333;
     }
     .result strong {
-      color: #007bff;
+      color: #b58900;
     }
     .info h3 {
-      color: #007bff;
+      color: #b58900;
       margin-top: 20px;
     }
     .info p {
@@ -136,12 +136,12 @@
         return;
       }
 
-      // Aplicar fórmula y redondear hacia abajo
-      const tiempo = Math.floor(a * Math.pow(temperatura, -b));
+      // Aplicar fórmula con 1 decimal
+      const tiempo = (a * Math.pow(temperatura, -b)).toFixed(1);
 
-      // Mostrar resultado
+      // Mostrar resultado con la palabra "horas" en negrita
       document.getElementById('resultado').innerHTML = 
-        `El tiempo estimado de fermentación es de aproximadamente <strong>${tiempo}</strong> horas.`;
+        `El tiempo estimado de fermentación es de aproximadamente <strong>${tiempo} horas</strong>.`;
     }
   </script>
 </body>
