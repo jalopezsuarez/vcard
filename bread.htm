@@ -144,16 +144,17 @@
       </p>
     </div>
   </div>  
-
+  
   <div class="info-container">
     <h3>ÚLTIMAS CONSULTAS</h3>
     <table id="tablaConsultas">
       <thead>
         <tr>
-          <th>Cálculo</th>
           <th>Temp</th>
+          <th>Tiempo</th>
           <th>Inicio</th>
           <th>Termina</th>
+          <th>Registro</th>
         </tr>
       </thead>
       <tbody>
@@ -174,22 +175,24 @@
       consultas.forEach(consulta => {
         const fila = document.createElement('tr');
         fila.innerHTML = `
-          <td>${consulta.fechaHora}</td>
           <td>${consulta.temperatura}°C</td>
+          <td>${consulta.tiempo} horas</td>
           <td>${consulta.horaInicio || 'N/A'}</td>
           <td>${consulta.horaFinal || 'N/A'}</td>
+          <td>${consulta.fechaHora}</td>
         `;
         tablaBody.appendChild(fila);
       });
     }
 
-    function guardarConsulta(temperatura, horaInicio, horaFinal) {
+    function guardarConsulta(temperatura, tiempo, horaInicio, horaFinal) {
       const consultas = JSON.parse(localStorage.getItem('SourdoughBreadHelper')) || [];
       const now = new Date();
       const fechaHora = `${now.toLocaleDateString()} ${now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
       const nuevaConsulta = {
         fechaHora,
         temperatura,
+        tiempo,
         horaInicio,
         horaFinal
       };
@@ -222,7 +225,7 @@
 
       resultadoDiv.innerHTML = mensaje;
 
-      guardarConsulta(temperatura, inicioFormatted, horaFinal ? `${Math.floor(horaFinal)}:00` : null);
+      guardarConsulta(temperatura, tiempo, inicioFormatted, horaFinal ? `${Math.floor(horaFinal)}:00` : null);
       cargarTabla();
     }
 
