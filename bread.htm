@@ -10,11 +10,10 @@
       margin: 0;
       padding: 0;
       display: flex;
-      justify-content: center;
-      align-items: center;
       flex-direction: column;
-      height: 100vh;
+      align-items: center;
       background-color: #f4f4f9;
+      padding-bottom: 20px;
     }
     .container {
       background: #fff;
@@ -22,7 +21,9 @@
       border-radius: 10px;
       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
       text-align: center;
-      margin-bottom: 20px;
+      margin-top: 20px;
+      width: 90%;
+      max-width: 500px;
     }
     h1 {
       color: #333;
@@ -51,16 +52,24 @@
       font-size: 18px;
       color: #333;
     }
-    .info {
-      max-width: 600px;
+    .info-container {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      margin-top: 20px;
+      width: 90%;
+      max-width: 500px;
       text-align: left;
+    }
+    .info h3 {
+      color: #007bff;
+      margin-top: 20px;
+    }
+    .info p {
       font-size: 14px;
       color: #333;
       line-height: 1.6;
-    }
-    .info h3 {
-      margin-top: 20px;
-      color: #007bff;
     }
   </style>
 </head>
@@ -73,44 +82,46 @@
     <div class="result" id="resultado"></div>
   </div>
 
-  <div class="info">
-    <h3>PROCESO: PROPORCIONES</h3>
-    <p>
-      Paso 1) 400g agua<br>
-      Paso 2) 100g masa madre<br>
-      Paso 3) 10g sal - 1 cuchara pequeña<br>
-      Paso 4) semillas - 2 / 3 cucharas grandes<br>
-      Paso 5) 500g mezcla harinas
-    </p>
+  <div class="info-container">
+    <div class="info">
+      <h3>PROCESO: PROPORCIONES</h3>
+      <p>
+        Paso 1) 400g agua<br>
+        Paso 2) 100g masa madre<br>
+        Paso 3) 10g sal - 1 cuchara pequeña<br>
+        Paso 4) semillas - 2 / 3 cucharas grandes<br>
+        Paso 5) 500g mezcla harinas
+      </p>
 
-    <h3>PROCESO: FERMENTACIÓN</h3>
-    <p>
-      - Tiempo calculado según temperatura ambiente.<br>
-      - Amasar pasada la primera hora<br>
-      - Añadir 1 o 2 horas en frío antes de hornear
-    </p>
+      <h3>PROCESO: FERMENTACIÓN</h3>
+      <p>
+        - Tiempo calculado según temperatura ambiente.<br>
+        - Amasar pasada la primera hora<br>
+        - Añadir 1 o 2 horas en frío antes de hornear
+      </p>
 
-    <h3>PROCESO: HORNEADO</h3>
-    <p>
-      - 30min: precalentar horno y cacerola 250 °C<br>
-      - 25min: cacerola tapada 250 °C<br>
-      - 10min / 15min: cacerola destapada 200 °C convector
-    </p>
+      <h3>PROCESO: HORNEADO</h3>
+      <p>
+        - 30min: precalentar horno y cacerola 250 °C<br>
+        - 25min: cacerola tapada 250 °C<br>
+        - 10min / 15min: cacerola destapada 200 °C convector
+      </p>
 
-    <h3>MASA MADRE: ACTIVACIÓN</h3>
-    <p>
-      - Por la mañana sacar de la nevera sin refrescar a temperatura ambiente.<br>
-      - Esa noche refrescar y meter en fermentador (25 +/- 2 °C).<br>
-      - Día siguiente realizar pan (tamaño duplicado y flota).
-    </p>
+      <h3>MASA MADRE: ACTIVACIÓN</h3>
+      <p>
+        - Por la mañana sacar de la nevera sin refrescar a temperatura ambiente.<br>
+        - Esa noche refrescar y meter en fermentador (25 +/- 2 °C).<br>
+        - Día siguiente realizar pan (tamaño duplicado y flota).
+      </p>
 
-    <h3>MASA MADRE: CREACIÓN</h3>
-    <p>
-      - Mantenerla entre 25 +/- 2 °C temperatura estable para activarla.<br>
-      - REFRESCAR DURANTE 5 días: papilla de harina y agua.<br>
-      - REFRESCAR: DUPLICA TAMAÑO (si flota en agua está activa).<br>
-      - Guardar en la nevera para conservar.
-    </p>
+      <h3>MASA MADRE: CREACIÓN</h3>
+      <p>
+        - Mantenerla entre 25 +/- 2 °C temperatura estable para activarla.<br>
+        - REFRESCAR DURANTE 5 días: papilla de harina y agua.<br>
+        - REFRESCAR: DUPLICA TAMAÑO (si flota en agua está activa).<br>
+        - Guardar en la nevera para conservar.
+      </p>
+    </div>
   </div>
 
   <script>
