@@ -73,6 +73,22 @@
       color: #333;
       line-height: 1.6;
     }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    table, th, td {
+      border: 1px solid #ddd;
+    }
+    th, td {
+      padding: 10px;
+      text-align: center;
+    }
+    th {
+      background-color: #b58900;
+      color: #fff;
+    }
   </style>
 </head>
 <body>
@@ -129,10 +145,55 @@
     </div>
   </div>
 
+  <div class="info-container">
+    <h3>Últimas Consultas</h3>
+    <table id="tablaConsultas">
+      <thead>
+        <tr>
+          <th>Fecha-Hora del Cálculo</th>
+          <th>Temperatura (°C)</th>
+          <th>Hora Final</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Las filas se llenarán dinámicamente -->
+      </tbody>
+    </table>
+  </div>
+
   <script>
     // Parámetros del modelo potencial (T_f = a * T_a^(-b))
     const a = 172936; // Coeficiente
     const b = 3.34;   // Exponente
+
+    function cargarTabla() {
+      const tablaBody = document.querySelector('#tablaConsultas tbody');
+      const consultas = JSON.parse(localStorage.getItem('SourdoughBreadHelper')) || [];
+      tablaBody.innerHTML = '';
+
+      consultas.forEach(consulta => {
+        const fila = document.createElement('tr');
+        fila.innerHTML = `
+          <td>${consulta.fechaHora}</td>
+          <td>${consulta.temperatura}°C</td>
+          <td>${consulta.horaFinal || 'N/A'}</td>
+        `;
+        tablaBody.appendChild(fila);
+      });
+    }
+
+    function guardarConsulta(temperatura, horaFinal) {
+      const consultas = JSON.parse(localStorage.getItem('SourdoughBreadHelper')) || [];
+      const nuevaConsulta = {
+        fechaHora: new Date().toLocaleString(),
+        temperatura,
+        horaFinal
+      };
+
+      consultas.unshift(nuevaConsulta);
+      if (consultas.length > 25) consultas.pop();
+      localStorage.setItem('SourdoughBreadHelper', JSON.stringify(consultas));
+    }
 
     function calcularTiempo() {
       const temperatura = parseFloat(document.getElementById('temperatura').value);
@@ -148,13 +209,20 @@
       const tiempo = (a * Math.pow(temperatura, -b)).toFixed(1);
       let mensaje = `El tiempo estimado de fermentación es de aproximadamente <strong>${tiempo} horas</strong>.`;
 
+      let horaFinal = null;
       if (!isNaN(horaInicio) && horaInicio >= 0 && horaInicio <= 23) {
-        const tiempoFinal = (horaInicio + parseFloat(tiempo)) % 24;
-        mensaje += `<br>Si empiezas a las <strong>${horaInicio}:00</strong>, la fermentación termnará alrededor de las <strong>${Math.floor(tiempoFinal)}:00</strong>.`;
+        horaFinal = (horaInicio + parseFloat(tiempo)) % 24;
+        mensaje += `<br>Si empiezas a las <strong>${horaInicio}:00</strong>, terminarás alrededor de las <strong>${Math.floor(horaFinal)}:00</strong>.`;
       }
 
       resultadoDiv.innerHTML = mensaje;
+
+      guardarConsulta(temperatura, horaFinal ? `${Math.floor(horaFinal)}:00` : null);
+      cargarTabla();
     }
+
+    // Cargar la tabla al iniciar
+    document.addEventListener('DOMContentLoaded', cargarTabla);
   </script>
 </body>
 </html>
