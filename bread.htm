@@ -58,6 +58,9 @@
       font-size: 18px;
       color: #333;
     }
+    .result strong {
+      color: #007bff;
+    }
     .info h3 {
       color: #007bff;
       margin-top: 20px;
@@ -133,12 +136,12 @@
         return;
       }
 
-      // Aplicar fórmula y redondear al entero superior
-      const tiempo = Math.ceil(a * Math.pow(temperatura, -b));
+      // Aplicar fórmula y redondear hacia abajo
+      const tiempo = Math.floor(a * Math.pow(temperatura, -b));
 
       // Mostrar resultado
-      document.getElementById('resultado').innerText = 
-        `El tiempo estimado de fermentación es de aproximadamente ${tiempo} horas.`;
+      document.getElementById('resultado').innerHTML = 
+        `El tiempo estimado de fermentación es de aproximadamente <strong>${tiempo}</strong> horas.`;
     }
   </script>
 </body>
