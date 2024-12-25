@@ -14,50 +14,50 @@
       justify-content: center;
       align-items: center;
       min-height: 100vh;
-      background-color: #fdf6e3; /* Tono amarillento pálido */
+      background-color: #fdf6e3;
     }
     h1 {
-      font-size: 28px; /* Incrementado 2 puntos */
-      color: #b58900; /* Tono amarillo trigo */
+      font-size: 28px;
+      color: #b58900;
       margin-bottom: 20px;
     }
     .container, .info-container {
-      background: #fffde7; /* Fondo claro amarillo */
+      background: #fffde7;
       padding: 20px;
       border-radius: 10px;
       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
       width: 90%;
       max-width: 500px;
       text-align: center;
-      margin: 10px 10px; /* Márgenes iguales arriba, abajo, izquierda y derecha */
+      margin: 10px 10px;
     }
     .info-container {
       text-align: left;
     }
     input {
       padding: 10px;
-      font-size: 18px; /* Incrementado 2 puntos */
-      border: 1px solid #e3c882; /* Tono dorado */
+      font-size: 18px;
+      border: 1px solid #e3c882;
       border-radius: 5px;
       width: 100%;
       margin-bottom: 10px;
-      box-sizing: border-box; /* Asegura que el padding se mantenga */
+      box-sizing: border-box;
     }
     button {
       padding: 10px 20px;
-      font-size: 18px; /* Incrementado 2 puntos */
-      background-color: #b58900; /* Amarillo trigo */
+      font-size: 18px;
+      background-color: #b58900;
       color: #fff;
       border: none;
       border-radius: 5px;
       cursor: pointer;
     }
     button:hover {
-      background-color: #997000; /* Tono más oscuro */
+      background-color: #997000;
     }
     .result {
       margin-top: 20px;
-      font-size: 20px; /* Incrementado 2 puntos */
+      font-size: 20px;
       color: #333;
     }
     .result strong {
@@ -66,10 +66,10 @@
     .info h3 {
       color: #b58900;
       margin-top: 20px;
-      font-size: 18px; /* Incrementado 2 puntos */
+      font-size: 18px;
     }
     .info p {
-      font-size: 16px; /* Incrementado 2 puntos */
+      font-size: 16px;
       color: #333;
       line-height: 1.6;
     }
@@ -130,8 +130,8 @@
 
       <h3>MASA MADRE: ACTIVACIÓN</h3>
       <p>
-        - Mañana sacar de la nevera a temperatura ambiente.<br>
-        - Noche refrescar y meter en fermentador (25 +/- 2 °C).<br>
+        - Mañana de nevera a temperatura ambiente.<br>
+        - Noche refrescar y guardar fermentador (25 +/- 2 °C).<br>
         - Día siguiente realizar pan (tamaño duplicado y flota).
       </p>
 
@@ -143,7 +143,7 @@
         - Guardar en la nevera para conservar.
       </p>
     </div>
-  </div>
+  </div>  
 
   <div class="info-container">
     <h3>ÚLTIMAS CONSULTAS</h3>
@@ -152,6 +152,7 @@
         <tr>
           <th>Cálculo</th>
           <th>Temp (°C)</th>
+          <th>Inicio</th>
           <th>Termina</th>
         </tr>
       </thead>
@@ -162,9 +163,8 @@
   </div>
 
   <script>
-    // Parámetros del modelo potencial (T_f = a * T_a^(-b))
-    const a = 172936; // Coeficiente
-    const b = 3.34;   // Exponente
+    const a = 172936;
+    const b = 3.34;
 
     function cargarTabla() {
       const tablaBody = document.querySelector('#tablaConsultas tbody');
@@ -176,19 +176,21 @@
         fila.innerHTML = `
           <td>${consulta.fechaHora}</td>
           <td>${consulta.temperatura}°C</td>
+          <td>${consulta.horaInicio || 'N/A'}</td>
           <td>${consulta.horaFinal || 'N/A'}</td>
         `;
         tablaBody.appendChild(fila);
       });
     }
 
-    function guardarConsulta(temperatura, horaFinal) {
+    function guardarConsulta(temperatura, horaInicio, horaFinal) {
       const consultas = JSON.parse(localStorage.getItem('SourdoughBreadHelper')) || [];
       const now = new Date();
       const fechaHora = `${now.toLocaleDateString()} ${now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
       const nuevaConsulta = {
         fechaHora,
         temperatura,
+        horaInicio,
         horaFinal
       };
 
@@ -207,11 +209,12 @@
         return;
       }
 
-      // Aplicar fórmula con 1 decimal
       const tiempo = (a * Math.pow(temperatura, -b)).toFixed(1);
       let mensaje = `El tiempo estimado de fermentación es de aproximadamente <strong>${tiempo} horas</strong>.`;
 
       let horaFinal = null;
+      let inicioFormatted = isNaN(horaInicio) ? null : `${horaInicio}:00`;
+
       if (!isNaN(horaInicio) && horaInicio >= 0 && horaInicio <= 23) {
         horaFinal = (horaInicio + parseFloat(tiempo)) % 24;
         mensaje += `<br>Si empiezas a las <strong>${horaInicio}:00</strong>, terminarás alrededor de las <strong>${Math.floor(horaFinal)}:00</strong>.`;
@@ -219,11 +222,10 @@
 
       resultadoDiv.innerHTML = mensaje;
 
-      guardarConsulta(temperatura, horaFinal ? `${Math.floor(horaFinal)}:00` : null);
+      guardarConsulta(temperatura, inicioFormatted, horaFinal ? `${Math.floor(horaFinal)}:00` : null);
       cargarTabla();
     }
 
-    // Cargar la tabla al iniciar
     document.addEventListener('DOMContentLoaded', cargarTabla);
   </script>
 </body>
