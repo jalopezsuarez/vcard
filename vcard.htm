@@ -1,137 +1,126 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Calculadora de Fermentación</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-      height: 100vh;
-      background-color: #f4f4f9;
-    }
-    .container {
-      background: #fff;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-      text-align: center;
-      margin-bottom: 20px;
-    }
-    h1 {
-      color: #333;
-    }
-    input {
-      padding: 10px;
-      font-size: 16px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      width: 100%;
-      margin-bottom: 10px;
-    }
-    button {
-      padding: 10px 20px;
-      background-color: #007bff;
-      color: #fff;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #0056b3;
-    }
-    .result {
-      margin-top: 20px;
-      font-size: 18px;
-      color: #333;
-    }
-    .info {
-      max-width: 600px;
-      text-align: left;
-      font-size: 14px;
-      color: #333;
-      line-height: 1.6;
-    }
-    .info h3 {
-      margin-top: 20px;
-      color: #007bff;
-    }
-  </style>
+	<meta charset="UTF-8">
+	<title>vCard</title>
+	<script src="https://cdn.jsdelivr.net/npm/pako@1.0.11/dist/pako.min.js"></script>
 </head>
+
 <body>
-  <div class="container">
-    <h1>Calculadora de Fermentación</h1>
-    <p>Ingresa la temperatura media ambiente (°C):</p>
-    <input type="number" id="temperatura" placeholder="Temperatura en °C" />
-    <button onclick="calcularTiempo()">Calcular Tiempo</button>
-    <div class="result" id="resultado"></div>
-  </div>
+	<div id="compresion" style="display: none;">
+		<h2>vCard</h2>
+		<textarea id="texto" rows="10" cols="60">BEGIN:VCARD
+VERSION:3.0
+N:Applesed;John;;;
+FN:John Appleseed
+ORG:APPLE
+TITLE:Manager
+TEL;TYPE=WORK,PREF:+18885551212
+EMAIL;TYPE=WORK,PREF:john.appleseed@apple.com
+END:VCARD</textarea>
+		<textarea id="resultado" rows="10" cols="60" readonly></textarea>
+		<button onclick="comprimirTexto()">vCard (Compress / Base64)</button>
+	</div>
+	<script>
+	window.onload = function() {
+		const hash = window.location.hash.substr(1);
+		if(hash) {
+			descomprimirYDecodificar(hash);
+		} else {
+			document.getElementById('compresion').style.display = 'block';
+		}
+	}
+	const etiquetas = {
+		0x01: "N:",
+		0x02: "FN:",
+		0x03: "ORG:",
+		0x04: "TITLE:",
+		0x05: "TEL:",		
+		0x06: "TEL;TYPE=WORK,PREF:",
+		0x07: "EMAIL:",
+		0x08: "EMAIL;TYPE=WORK,PREF:"
+	};
 
-  <div class="info">
-    <h3>PROCESO: PROPORCIONES</h3>
-    <p>
-      Paso 1) 400g agua<br>
-      Paso 2) 100g masa madre<br>
-      Paso 3) 10g sal - 1 cuchara pequeña<br>
-      Paso 4) semillas - 2 / 3 cucharas grandes<br>
-      Paso 5) 500g mezcla harinas
-    </p>
+	function descomprimirYDecodificar(textoComprimido) {
+		const datosComprimidos = atob(textoComprimido);
+		const charData = datosComprimidos.split('').map(c => c.charCodeAt(0));
+		const binData = new Uint8Array(charData);
+		const datosDescomprimidos = pako.inflate(binData);
+		const vCardData = decodificarVCard(datosDescomprimidos);
+		descargarComoArchivo(vCardData.contenido, vCardData.filename);
+	}
 
-    <h3>PROCESO: FERMENTACIÓN</h3>
-    <p>
-      - Tiempo calculado según temperatura ambiente.<br>
-      - Amasar pasada la primera hora<br>
-      - Añadir 1 o 2 horas en frío antes de hornear
-    </p>
+	function decodificarVCard(datos) {
+		let resultado = "";
+		let filename = "vCard.vcf";
+		let i = 0;
+		resultado += "BEGIN:VCARD" + "\r\n";
+		resultado += "VERSION:3.0" + "\r\n";
+		while(i < datos.length) {
+			const codigo = datos[i++];
+			const etiqueta = etiquetas[codigo];
+			let valor = "";
+			while(i < datos.length && !(datos[i] in etiquetas)) {
+				valor += String.fromCharCode(datos[i++]);
+			}
+			if(valor !== undefined) {
+				resultado += etiqueta + valor + "\r\n";
+				if (etiqueta === "FN:") {
+					filename = valor.toLowerCase().replace(/\s/g, '') + ".vcf";
+				}
+			} else {
+				resultado += etiqueta + "\r\n";
+			}
+		}
+		resultado += "END:VCARD" + "\r\n";
+		return { contenido: resultado, filename: filename };
+	}
 
-    <h3>PROCESO: HORNEADO</h3>
-    <p>
-      - 30min: precalentar horno y cacerola 250 °C<br>
-      - 25min: cacerola tapada 250 °C<br>
-      - 10min / 15min: cacerola destapada 200 °C convector
-    </p>
+	function descargarComoArchivo(contenido, filename) {
+		const elemento = document.createElement('a');
+		const archivo = new Blob([contenido], {
+			type: 'text/vcard;charset=utf-8'
+		});
+		const url = URL.createObjectURL(archivo);
+		
+		elemento.href = url
+		elemento.download = filename;
+		document.body.appendChild(elemento);
+		elemento.click();
+		document.body.removeChild(elemento);
 
-    <h3>MASA MADRE: ACTIVACIÓN</h3>
-    <p>
-      - Por la mañana sacar de la nevera sin refrescar a temperatura ambiente.<br>
-      - Esa noche refrescar y meter en fermentador (25 +/- 2 °C).<br>
-      - Día siguiente realizar pan (tamaño duplicado y flota).
-    </p>
-
-    <h3>MASA MADRE: CREACIÓN</h3>
-    <p>
-      - Mantenerla entre 25 +/- 2 °C temperatura estable para activarla.<br>
-      - REFRESCAR DURANTE 5 días: papilla de harina y agua.<br>
-      - REFRESCAR: DUPLICA TAMAÑO (si flota en agua está activa).<br>
-      - Guardar en la nevera para conservar.
-    </p>
-  </div>
-
-  <script>
-    // Parámetros del modelo potencial (T_f = a * T_a^(-b))
-    const a = 172936; // Coeficiente
-    const b = 3.34;   // Exponente
-
-    function calcularTiempo() {
-      const temperatura = parseFloat(document.getElementById('temperatura').value);
-      if (isNaN(temperatura) || temperatura <= 0) {
-        document.getElementById('resultado').innerText = "Por favor, ingresa una temperatura válida.";
-        return;
-      }
-
-      // Aplicar fórmula
-      const tiempo = a * Math.pow(temperatura, -b);
-
-      // Mostrar resultado
-      document.getElementById('resultado').innerText = 
-        `El tiempo estimado de fermentación es de aproximadamente ${tiempo.toFixed(2)} horas.`;
-    }
-  </script>
+		//window.open(url, '_blank');
+		//window.location.href = `intent://scan/#Intent;scheme=content;type=text/vcard;S.browser_fallback_url=${encodeURIComponent(url)};end`;
+	}
+		
+	function comprimirTexto() {
+		const texto = document.getElementById('texto').value;
+		const campos = texto.split(/\r?\n/);
+		let buffer = new Uint8Array(campos.length * 30);
+		let offset = 0;
+		const codigos = Object.fromEntries(Object.entries(etiquetas).map(([key, value]) => [value.split(':')[0], key]));
+		campos.forEach(campo => {
+			if(campo.trim() === '') return;
+			campo = campo.trim()
+			let [etiqueta, valor] = campo.split(':');
+			etiqueta = etiqueta.trim();
+			valor = valor ? valor.trim() : '';
+			const tagCode = codigos[etiqueta];
+			if(tagCode !== undefined) {
+				buffer[offset++] = tagCode;
+				for(let i = 0; i < valor.length; i++) {
+					buffer[offset++] = valor.charCodeAt(i);
+				}
+			}
+		});
+		const datosComprimidos = pako.deflate(buffer.subarray(0, offset), {
+			level: 9
+		});
+		const base64Comprimido = btoa(String.fromCharCode.apply(null, datosComprimidos));
+		document.getElementById('resultado').value = base64Comprimido;
+	}
+	</script>
 </body>
+
 </html>
