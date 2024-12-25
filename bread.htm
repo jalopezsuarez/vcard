@@ -151,7 +151,7 @@
       <thead>
         <tr>
           <th>Temp</th>
-          <th>Tiempo</th>
+          <th>Horas</th>
           <th>Inicio</th>
           <th>Termina</th>
           <th>Registro</th>
@@ -176,7 +176,7 @@
         const fila = document.createElement('tr');
         fila.innerHTML = `
           <td>${consulta.temperatura}°C</td>
-          <td>${consulta.tiempo} horas</td>
+          <td>${consulta.tiempo}</td>
           <td>${consulta.horaInicio || 'N/A'}</td>
           <td>${consulta.horaFinal || 'N/A'}</td>
           <td>${consulta.fechaHora}</td>
