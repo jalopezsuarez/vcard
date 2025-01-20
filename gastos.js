@@ -1,51 +1,51 @@
 document.addEventListener('DOMContentLoaded', () => {
     const categorySelect = document.getElementById('category');
-    const subcategorySelect = document.getElementById('subcategory');
+    const sectionSelect = document.getElementById('section');
     const dataTable = document.getElementById('dataTable').querySelector('tbody');
     const fileInput = document.getElementById('fileInput');
-    let categorySubcategoryMap = {}; // Relación entre categorías y subcategorías
+    let categorySectionMap = {}; // Relación entre categorias y secciones.
     let sortOrder = Array(5).fill(true); // Ascendente por defecto para cada columna.
 
-    // Añadir categoría dinámica
+    // Añadir categoria dinámica
     document.getElementById('addCategory').addEventListener('click', () => {
-        const newCategory = prompt('Introduce una nueva categoría:');
-        if (newCategory && !categorySubcategoryMap[newCategory]) {
-            categorySubcategoryMap[newCategory] = [];
+        const newCategory = prompt('Introduce una nueva categoria:');
+        if (newCategory && !categorySectionMap[newCategory]) {
+            categorySectionMap[newCategory] = [];
             const option = new Option(newCategory, newCategory, true, true);
             categorySelect.add(option);
         }
     });
 
-    // Añadir subcategoría dinámica
-    document.getElementById('addSubcategory').addEventListener('click', () => {
+    // Añadir seccion dinámica
+    document.getElementById('addSection').addEventListener('click', () => {
         const selectedCategory = categorySelect.value;
         if (!selectedCategory) {
-            alert('Selecciona una categoría primero.');
+            alert('Selecciona una categoria primero.');
             return;
         }
 
-        const newSubcategory = prompt(`Introduce una nueva subcategoría para "${selectedCategory}":`);
-        if (newSubcategory && !categorySubcategoryMap[selectedCategory].includes(newSubcategory)) {
-            categorySubcategoryMap[selectedCategory].push(newSubcategory);
+        const newSubcategory = prompt(`Introduce una nueva seccion para "${selectedCategory}":`);
+        if (newSubcategory && !categorySectionMap[selectedCategory].includes(newSubcategory)) {
+            categorySectionMap[selectedCategory].push(newSubcategory);
             if (categorySelect.value === selectedCategory) {
                 const option = new Option(newSubcategory, newSubcategory, true, true);
-                subcategorySelect.add(option);
+                sectionSelect.add(option);
             }
         }
     });
 
-    // Actualizar subcategorías al cambiar de categoría
+    // Actualizar secciones al cambiar de categoria
     categorySelect.addEventListener('change', () => {
         const selectedCategory = categorySelect.value;
-        updateSubcategoryOptions(selectedCategory);
+        updateSectionOptions(selectedCategory);
     });
 
-    function updateSubcategoryOptions(category) {
-        subcategorySelect.innerHTML = '<option value="" disabled selected>Selecciona una subcategoría</option>';
-        if (categorySubcategoryMap[category]) {
-            categorySubcategoryMap[category].forEach(subcat => {
-                const option = new Option(subcat, subcat);
-                subcategorySelect.add(option);
+    function updateSectionOptions(category) {
+        sectionSelect.innerHTML = '<option value="" disabled selected>Selecciona una seccion</option>';
+        if (categorySectionMap[category]) {
+            categorySectionMap[category].forEach(section => {
+                const option = new Option(section, section);
+                sectionSelect.add(option);
             });
         }
     }
@@ -54,12 +54,12 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('dataForm').addEventListener('submit', (event) => {
         event.preventDefault();
         const category = categorySelect.value;
-        const subcategory = subcategorySelect.value;
+        const section = sectionSelect.value;
         const value = document.getElementById('value').value;
         const date = document.getElementById('date').value;
         const description = document.getElementById('description').value;
 
-        if (!category || !subcategory || !value || !date || !description) {
+        if (!category || !section || !value || !date || !description) {
             alert('Por favor, completa todos los campos.');
             return;
         }
@@ -67,11 +67,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const month = getFormattedMonth(date);
         const row = dataTable.insertRow();
         row.innerHTML = `
-            <td>${category}</td>
-            <td>${subcategory}</td>
-            <td>${value}</td>
-            <td>${date}</td>
-            <td>${month}</td>
+            <td nowrap>${category}</td>
+            <td nowrap>${section}</td>
+            <td nowrap>${value}</td>
+            <td nowrap>${date}</td>
+            <td nowrap>${month}</td>
             <td>${description}</td>
             <td><button class="btn btn-danger btn-sm delete-row">Eliminar</button></td>
         `;
@@ -112,30 +112,30 @@ document.addEventListener('DOMContentLoaded', () => {
                 const sheet = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
 
                 sheet.forEach(row => {
-                    const category = row['Categoría'];
-                    const subcategory = row['Subcategoría'];
-                    const value = row['Valor (€)'];
+                    const category = row['Categoria'];
+                    const section = row['Seccion'];
+                    const value = row['Valor'];
                     const date = row['Fecha'];
-                    const description = row['Descripción'];
+                    const description = row['Descripcion'];
                     const month = getFormattedMonth(date);
 
                     if (category) {
-                        if (!categorySubcategoryMap[category]) {
-                            categorySubcategoryMap[category] = [];
+                        if (!categorySectionMap[category]) {
+                            categorySectionMap[category] = [];
                             categorySelect.add(new Option(category, category));
                         }
-                        if (subcategory && !categorySubcategoryMap[category].includes(subcategory)) {
-                            categorySubcategoryMap[category].push(subcategory);
+                        if (section && !categorySectionMap[category].includes(section)) {
+                            categorySectionMap[category].push(section);
                         }
                     }
 
                     const rowElement = dataTable.insertRow();
                     rowElement.innerHTML = `
-                        <td>${category}</td>
-                        <td>${subcategory}</td>
-                        <td>${value}</td>
-                        <td>${date}</td>
-                        <td>${month}</td>
+                        <td nowrap>${category}</td>
+                        <td nowrap>${section}</td>
+                        <td nowrap>${value}</td>
+                        <td nowrap>${date}</td>
+                        <td nowrap>${month}</td>
                         <td>${description}</td>
                         <td><button class="btn btn-danger btn-sm delete-row">Eliminar</button></td>
                     `;
@@ -148,7 +148,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Guardar datos como Excel
     document.getElementById('downloadExcel').addEventListener('click', () => {
-        const rows = [['Categoría', 'Subcategoría', 'Valor (€)', 'Fecha', 'Mes', 'Descripción']];
+        const rows = [['Categoria', 'Seccion', 'Valor', 'Fecha', 'Mes', 'Descripcion']];
         Array.from(dataTable.rows).forEach(row => {
             const cells = Array.from(row.cells).slice(0, 6).map(cell => cell.textContent);
             rows.push(cells);
@@ -168,7 +168,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <thead class="table-dark">
             <tr>
                 <th>Mes</th>
-                <th>Total (€)</th>
+                <th>Total</th>
                 <th>Entradas</th>
             </tr>
         </thead>
@@ -199,9 +199,9 @@ document.addEventListener('DOMContentLoaded', () => {
         Object.keys(summaryData).sort().forEach(month => {
             const row = summaryBody.insertRow();
             row.innerHTML = `
-                <td>${month}</td>
-                <td>${summaryData[month].total.toFixed(2)}</td>
-                <td>${summaryData[month].count}</td>
+                <td nowrap>${month}</td>
+                <td nowrap>${summaryData[month].total.toFixed(2)}</td>
+                <td nowrap>${summaryData[month].count}</td>
             `;
         });
     };
