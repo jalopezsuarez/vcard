@@ -26,14 +26,14 @@
     }
 
     h1 {
-      font-size: 2.5em;
+      font-size: 3em;
       text-align: center;
       margin-bottom: 20px;
     }
 
     #contenido-cuento p {
-      font-size: 1.5em;
-      line-height: 1.6;
+      font-size: 2em;
+      line-height: 1.8;
       color: #fff !important;
       background: none !important;
     }
@@ -42,6 +42,8 @@
       color: #fff !important;
       background: none !important;
       font-family: 'Merriweather', serif !important;
+      font-size: 2em !important;
+      line-height: 1.8 !important;
     }
   </style>
 </head>
@@ -70,18 +72,15 @@
           const titulo = randomEntry.title.$t;
           let contenido = randomEntry.content.$t;
 
-          // Crear un contenedor temporal para limpiar el HTML
           const tempDiv = document.createElement('div');
           tempDiv.innerHTML = contenido;
 
-          // Eliminar todos los estilos en línea y clases
           const elements = tempDiv.querySelectorAll('*');
           elements.forEach(el => {
             el.removeAttribute('style');
             el.removeAttribute('class');
           });
 
-          // Insertar en el contenedor limpio
           document.getElementById("titulo-cuento").textContent = titulo;
           document.getElementById("contenido-cuento").innerHTML = tempDiv.innerHTML;
         })
