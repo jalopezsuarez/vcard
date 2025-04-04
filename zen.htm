@@ -31,9 +31,17 @@
       margin-bottom: 20px;
     }
 
-    p {
+    #contenido-cuento p {
       font-size: 1.5em;
       line-height: 1.6;
+      color: #fff !important;
+      background: none !important;
+    }
+
+    #contenido-cuento * {
+      color: #fff !important;
+      background: none !important;
+      font-family: 'Merriweather', serif !important;
     }
   </style>
 </head>
@@ -50,25 +58,32 @@
 
       fetch(proxyURL)
         .then(response => {
-          if (!response.ok) {
-            throw new Error('Error en la respuesta del proxy');
-          }
+          if (!response.ok) throw new Error('Error en la respuesta del proxy');
           return response.json();
         })
         .then(data => {
           const parsedData = JSON.parse(data.contents);
           const entries = parsedData.feed.entry;
-
-          if (!entries || entries.length === 0) {
-            throw new Error("No hay cuentos disponibles");
-          }
+          if (!entries || entries.length === 0) throw new Error("No hay cuentos disponibles");
 
           const randomEntry = entries[Math.floor(Math.random() * entries.length)];
           const titulo = randomEntry.title.$t;
-          const contenido = randomEntry.content.$t;
+          let contenido = randomEntry.content.$t;
 
+          // Crear un contenedor temporal para limpiar el HTML
+          const tempDiv = document.createElement('div');
+          tempDiv.innerHTML = contenido;
+
+          // Eliminar todos los estilos en línea y clases
+          const elements = tempDiv.querySelectorAll('*');
+          elements.forEach(el => {
+            el.removeAttribute('style');
+            el.removeAttribute('class');
+          });
+
+          // Insertar en el contenedor limpio
           document.getElementById("titulo-cuento").textContent = titulo;
-          document.getElementById("contenido-cuento").innerHTML = contenido;
+          document.getElementById("contenido-cuento").innerHTML = tempDiv.innerHTML;
         })
         .catch(error => {
           console.error("Error al cargar el cuento:", error);
