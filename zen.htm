@@ -1,70 +1,81 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cuento Zen Aleatorio</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&display=swap');
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cuento Zen Aleatorio</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&display=swap');
 
-        body {
-            background-color: #000;
-            color: #fff;
-            font-family: 'Merriweather', serif;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
+    body {
+      background-color: #000;
+      color: #fff;
+      font-family: 'Merriweather', serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
 
-        #ebook-container {
-            max-width: 800px;
-            padding: 20px;
-            text-align: justify;
-        }
+    #ebook-container {
+      max-width: 800px;
+      padding: 20px;
+      text-align: justify;
+    }
 
-        h1 {
-            font-size: 2.5em;
-            text-align: center;
-            margin-bottom: 20px;
-        }
+    h1 {
+      font-size: 2.5em;
+      text-align: center;
+      margin-bottom: 20px;
+    }
 
-        p {
-            font-size: 1.5em;
-            line-height: 1.6;
-        }
-    </style>
+    p {
+      font-size: 1.5em;
+      line-height: 1.6;
+    }
+  </style>
 </head>
 <body>
-    <div id="ebook-container">
-        <h1 id="titulo-cuento">Cargando cuento...</h1>
-        <div id="contenido-cuento"></div>
-    </div>
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const feedUrl = 'https://cuentosbudismozen.blogspot.com/feeds/posts/default?alt=json';
+  <div id="ebook-container">
+    <h1 id="titulo-cuento">Cargando cuento...</h1>
+    <div id="contenido-cuento"></div>
+  </div>
 
-            fetch(feedUrl)
-                .then(response => response.json())
-                .then(data => {
-                    const entries = data.feed.entry;
-                    const randomIndex = Math.floor(Math.random() * entries.length);
-                    const selectedEntry = entries[randomIndex];
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const feedURL = 'https://cuentosbudismozen.blogspot.com/feeds/posts/default?alt=json';
+      const proxyURL = 'https://api.allorigins.win/get?url=' + encodeURIComponent(feedURL);
 
-                    const titulo = selectedEntry.title.$t;
-                    const contenido = selectedEntry.content.$t;
+      fetch(proxyURL)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Error en la respuesta del proxy');
+          }
+          return response.json();
+        })
+        .then(data => {
+          const parsedData = JSON.parse(data.contents);
+          const entries = parsedData.feed.entry;
 
-                    document.getElementById('titulo-cuento').textContent = titulo;
-                    document.getElementById('contenido-cuento').innerHTML = contenido;
-                })
-                .catch(error => {
-                    console.error('Error al obtener el cuento:', error);
-                    document.getElementById('titulo-cuento').textContent = 'Error al cargar el cuento';
-                    document.getElementById('contenido-cuento').textContent = 'No se pudo cargar el cuento. Por favor, inténtalo de nuevo más tarde.';
-                });
+          if (!entries || entries.length === 0) {
+            throw new Error("No hay cuentos disponibles");
+          }
+
+          const randomEntry = entries[Math.floor(Math.random() * entries.length)];
+          const titulo = randomEntry.title.$t;
+          const contenido = randomEntry.content.$t;
+
+          document.getElementById("titulo-cuento").textContent = titulo;
+          document.getElementById("contenido-cuento").innerHTML = contenido;
+        })
+        .catch(error => {
+          console.error("Error al cargar el cuento:", error);
+          document.getElementById("titulo-cuento").textContent = "Error al cargar el cuento";
+          document.getElementById("contenido-cuento").innerHTML = "<p>No se pudo cargar el cuento. Intenta más tarde.</p>";
         });
-    </script>
+    });
+  </script>
 </body>
 </html>
