@@ -1,3 +1,61 @@
+// Timer Worker functionality
+class TimerWorker {
+    constructor() {
+        this.timerId = null;
+        this.timeLeft = 0;
+        this.callbacks = {
+            onTick: null,
+            onComplete: null
+        };
+    }
+
+    start(timeLeft) {
+        this.timeLeft = timeLeft;
+        if (this.timerId === null) {
+            this.timerId = setInterval(() => {
+                this.timeLeft--;
+                if (this.callbacks.onTick) {
+                    this.callbacks.onTick(this.timeLeft);
+                }
+                if (this.timeLeft <= 0) {
+                    this.stop();
+                    if (this.callbacks.onComplete) {
+                        this.callbacks.onComplete();
+                    }
+                }
+            }, 1000);
+        }
+    }
+
+    pause() {
+        if (this.timerId !== null) {
+            clearInterval(this.timerId);
+            this.timerId = null;
+        }
+    }
+
+    stop() {
+        this.pause();
+    }
+
+    reset(timeLeft) {
+        this.stop();
+        this.timeLeft = timeLeft;
+        if (this.callbacks.onTick) {
+            this.callbacks.onTick(this.timeLeft);
+        }
+    }
+
+    onTick(callback) {
+        this.callbacks.onTick = callback;
+    }
+
+    onComplete(callback) {
+        this.callbacks.onComplete = callback;
+    }
+}
+
+// Main application code
 document.addEventListener('DOMContentLoaded', () => {
     const timerDisplay = document.getElementById('timer');
     const startBtn = document.getElementById('startBtn');
@@ -8,6 +66,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const gongSound = document.getElementById('gongSound');
     const donutCircle = document.querySelector('.donut-circle');
     const quoteElement = document.getElementById('quote');
+    const container = document.querySelector('.bg-dark-200');
+
+    // Create timer instance
+    const timer = new TimerWorker();
+    let totalTime = 0;
 
     const zenQuotes = [
         // Citas sobre la paz interior
@@ -88,16 +151,14 @@ document.addEventListener('DOMContentLoaded', () => {
         "El corazón de la aceptación es dejar ir la necesidad de cambiar las cosas y permitir que la vida misma se desarrolle. - Desconocido"
     ];
 
-    // Cargar el último tiempo usado o usar 5 minutos por defecto
-    let timeLeft = parseInt(localStorage.getItem('lastMeditationTime')) || 300;
-    let totalTime = timeLeft;
-    let timerId = null;
-    const circumference = 283; // 2 * π * r (r = 45)
-
     function getRandomQuote() {
         const randomIndex = Math.floor(Math.random() * zenQuotes.length);
         return zenQuotes[randomIndex];
     }
+
+    // Cargar el último tiempo usado o usar 5 minutos por defecto
+    let timeLeft = parseInt(localStorage.getItem('lastMeditationTime')) || 300;
+    totalTime = timeLeft;
 
     // Actualizar el input con el último tiempo usado
     timeInput.value = Math.floor(timeLeft / 60);
@@ -107,13 +168,13 @@ document.addEventListener('DOMContentLoaded', () => {
         gongSound.play();
     }
 
-    function updateTimerDisplay() {
+    function updateTimerDisplay(timeLeft) {
         const minutes = Math.floor(timeLeft / 60);
         const seconds = timeLeft % 60;
         timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
         
         // Actualizar la donut
-        const progress = (timeLeft / totalTime) * circumference;
+        const progress = (timeLeft / totalTime) * 283;
         donutCircle.style.strokeDashoffset = progress;
     }
 
@@ -122,75 +183,37 @@ document.addEventListener('DOMContentLoaded', () => {
         if (minutes >= 1 && minutes <= 60) {
             timeLeft = minutes * 60;
             totalTime = timeLeft;
-            updateTimerDisplay();
+            updateTimerDisplay(timeLeft);
             // Guardar el tiempo en localStorage
             localStorage.setItem('lastMeditationTime', timeLeft.toString());
         }
     }
 
-    function startTimer() {
-        if (timerId === null) {
-            timerId = setInterval(() => {
-                if (timeLeft > 0) {
-                    timeLeft--;
-                    updateTimerDisplay();
-                } else {
-                    clearInterval(timerId);
-                    timerId = null;
-                    playGong();
-                    // Registrar la meditación en Apple Health
-                    recordMeditation();
-                }
-            }, 1000);
-        }
+    function showCompletionNotification() {
+        container.classList.add('animate-pulse');
+        container.classList.add('ring-2', 'ring-emerald-500');
+        setTimeout(() => {
+            container.classList.remove('animate-pulse', 'ring-2', 'ring-emerald-500');
+        }, 2000);
     }
 
-    function pauseTimer() {
-        if (timerId !== null) {
-            clearInterval(timerId);
-            timerId = null;
-        }
-    }
-
-    async function recordMeditation() {
-        try {
-            // Verificar si HealthKit está disponible
-            if (window.HealthKit) {
-                const healthStore = new window.HealthKit.HealthStore();
-                
-                // Solicitar permisos para escribir datos de meditación
-                const typesToWrite = ['HKCategoryTypeIdentifierMindfulSession'];
-                await healthStore.requestAuthorization(typesToWrite, []);
-                
-                // Crear una muestra de meditación
-                const mindfulSession = new window.HealthKit.HKCategorySample({
-                    categoryType: 'HKCategoryTypeIdentifierMindfulSession',
-                    startDate: new Date(Date.now() - (totalTime * 1000)),
-                    endDate: new Date(),
-                    value: 0 // 0 indica una sesión de meditación
-                });
-                
-                // Guardar la muestra en HealthKit
-                await healthStore.saveSample(mindfulSession);
-                console.log('Meditación registrada en Apple Health');
-            } else {
-                console.log('HealthKit no está disponible en este dispositivo');
-            }
-        } catch (error) {
-            console.error('Error al registrar la meditación:', error);
-        }
-    }
+    // Configurar callbacks del timer
+    timer.onTick(updateTimerDisplay);
+    timer.onComplete(() => {
+        playGong();
+        showCompletionNotification();
+    });
 
     // Event listeners
     startBtn.addEventListener('click', () => {
         updateTimeFromInput();
         playGong();
-        startTimer();
+        timer.start(timeLeft);
         quoteElement.textContent = getRandomQuote();
     });
 
     pauseBtn.addEventListener('click', () => {
-        pauseTimer();
+        timer.pause();
     });
 
     increaseTimeBtn.addEventListener('click', () => {
@@ -212,5 +235,5 @@ document.addEventListener('DOMContentLoaded', () => {
     timeInput.addEventListener('change', updateTimeFromInput);
 
     // Initialize timer display
-    updateTimerDisplay();
+    updateTimerDisplay(timeLeft);
 }); 
