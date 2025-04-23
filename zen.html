@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meditación</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Condensed:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/healthkit-js@latest/dist/healthkit.min.js"></script>
+    <style>
+        /* Ocultar las flechas del input numérico */
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+        .donut {
+            transform: rotate(-90deg);
+        }
+        .donut-circle {
+            transition: stroke-dashoffset 1s linear;
+        }
+        .quote {
+            min-height: 4rem;
+        }
+        /* Aplicar fuentes */
+        body {
+            font-family: 'Roboto', sans-serif;
+        }
+        #timer, input[type="number"] {
+            font-family: 'Roboto Condensed', sans-serif;
+        }
+    </style>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        dark: {
+                            100: '#1a1a1a',
+                            200: '#2d2d2d',
+                            300: '#404040',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Roboto', 'sans-serif'],
+                        condensed: ['Roboto Condensed', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-dark-100 min-h-screen flex items-center justify-center">
+    <div class="bg-dark-200 text-white p-8 rounded-xl shadow-2xl max-w-sm mx-auto w-full">
+        <div class="relative w-48 h-48 mx-auto mb-8">
+            <svg class="donut w-full h-full" viewBox="0 0 100 100">
+                <circle class="donut-background" cx="50" cy="50" r="45" fill="none" stroke="#404040" stroke-width="10"/>
+                <circle class="donut-circle" cx="50" cy="50" r="45" fill="none" stroke="#10B981" stroke-width="10" stroke-dasharray="283" stroke-dashoffset="283"/>
+            </svg>
+            <div class="absolute inset-0 flex items-center justify-center">
+                <div class="text-4xl font-condensed text-emerald-300" id="timer">05:00</div>
+            </div>
+        </div>
+        
+        <div class="quote text-center text-emerald-200 italic mb-8 px-4" id="quote">
+            "La paz viene de dentro. No la busques fuera." - Buda
+        </div>
+
+        <div class="flex items-center justify-center mb-8">
+            <button id="decreaseTime" class="bg-blue-600 hover:bg-blue-700 text-white font-bold text-2xl w-12 h-12 rounded-lg transition-colors duration-200 flex items-center justify-center">-</button>
+            <input type="number" id="timeInput" min="1" max="60" value="5" class="mx-4 w-20 h-12 text-2xl text-center bg-dark-300 border-0 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 font-condensed">
+            <button id="increaseTime" class="bg-blue-600 hover:bg-blue-700 text-white font-bold text-2xl w-12 h-12 rounded-lg transition-colors duration-200 flex items-center justify-center ">+</button>
+        </div>
+
+        <div class="flex justify-center space-x-4">
+            <button id="startBtn" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-8 rounded-lg transition-colors duration-200">
+                Iniciar
+            </button>
+            <button id="pauseBtn" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-8 rounded-lg transition-colors duration-200">
+                Pausar
+            </button>
+        </div>
+    </div>
+    <audio id="gongSound" src="zen.mp3" preload="auto"></audio>
+    <script src="zen.js"></script>
+</body>
+</html> 
